@@ -2,13 +2,35 @@
 
 console.log(`Hello Node.js v${process.versions.node}!`);
 
+function Tile(char) {
+  this.char = char;
+}
+
+Tile.prototype.select = function (tiles) {
+  if (this.select_index !== null && typeof this.select_index !== 'undefined') {
+    throw new Error('Cannot re-select tile' + this.select_index);
+  }
+
+  const next_index = tiles
+    .filter(
+      (x) => typeof x.select_index !== 'undefined' && x.select_index !== null
+    )
+    .reduce((i, tile) => (tile.select_index > i ? tile.select_index : i), 0);
+
+  this.select_index = next_index;
+
+  return this.select_index;
+};
+
 module.exports = {
   create_tiles,
   order_char_set,
 };
 
-function create_tiles(wordset) {
-  return wordset.split('');
+function create_tiles(char_set) {
+  return char_set.split('').map((char) => {
+    return new Tile(char);
+  });
 }
 
 function order_char_set(char_set) {
@@ -26,5 +48,5 @@ function order_char_set(char_set) {
     }
     ordered.push(prev);
   }
-  return ordered;
+  return ordered[ordered.length - 1];
 }
